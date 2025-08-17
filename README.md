@@ -30,7 +30,8 @@ The agent communicates with the `gemini-2.0-flash-001` model through the `google
    ```
 5. Run the agent with a prompt:
    ```bash
-   python main.py "What files are in the project?"
+   uv run main.py "What files are in the project?"
    ```
-   Use `--verbose` to see each function call.
+   Use `--verbose` to see details of each function call.
+
 
