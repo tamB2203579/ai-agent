@@ -37,27 +37,47 @@ available_functions = types.Tool(
 client = genai.Client(api_key=api_key)
 
 user_prompt = sys.argv[1]
-
 verbose = "--verbose" in sys.argv
 
 messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)]),
 ]
 
-response = client.models.generate_content(
-    model='gemini-2.0-flash-001',
-    contents=messages,
-    config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt)
-)
+for i in range(20):
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-001',
+            contents=messages,
+            config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt)
+        )
 
-for function_call_part in response.function_calls:
-    function_call_result = call_function(function_call_part, verbose=verbose)
+        for candidate in response.candidates:
+            messages.append(candidate.content)
 
-    if not hasattr(function_call_result, "parts") or len(function_call_result.parts) == 0:
-        raise RuntimeError(f"call_function returned invalid result: missing parts")
-    
-    if not hasattr(function_call_result.parts[0], "function_response") or not hasattr(function_call_result.parts[0].function_response, "response"):
-        raise RuntimeError(f"call_function returned invalid result: missing function_response.response")
-    
-    if verbose:
-        print(f"-> {function_call_result.parts[0].function_response.response}")
+        if response.function_calls:
+            for function_call_part in response.function_calls:
+                function_call_result = call_function(function_call_part, verbose=verbose)
+
+                if not hasattr(function_call_result, "parts") or len(function_call_result.parts) == 0:
+                    raise RuntimeError(f"call_function returned invalid result: missing parts")
+                
+                if not hasattr(function_call_result.parts[0], "function_response") or not hasattr(function_call_result.parts[0].function_response, "response"):
+                    raise RuntimeError(f"call_function returned invalid result: missing function_response.response")
+                
+                if verbose:
+                    print(f"-> {function_call_result.parts[0].function_response.response}")
+                
+                messages.append(
+                    types.Content(
+                        role="user",
+                        parts=[function_call_result.parts[0]]
+                    )
+                )
+        elif response.text:
+            print("Final response:")
+            print(response.text)
+            break
+        
+    except Exception as e:
+        print(f"Error during loop iteration {i}: {e}")
+        break
