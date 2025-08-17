@@ -21,7 +21,8 @@ The agent communicates with the `gemini-2.0-flash-001` model through the `google
 2. Add your own project directory inside this repo (e.g. `./calculator`)
 3. Install dependencies:
    ```bash
-   pip install google-genai python-dotenv
+   pip install uv
+   uv pip install google-genai python-dotenv
    ```
 4. Create a `.env` file with your API key:
    ```
@@ -32,3 +33,4 @@ The agent communicates with the `gemini-2.0-flash-001` model through the `google
    python main.py "What files are in the project?"
    ```
    Use `--verbose` to see each function call.
+
