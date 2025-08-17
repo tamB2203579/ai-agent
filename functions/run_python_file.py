@@ -1,5 +1,6 @@
 import os
 import subprocess
+from google.genai import types
 
 def run_python_file(working_directory, file_path, args=[]):
     abs_working_dir = os.path.abspath(working_directory)
@@ -39,3 +40,25 @@ def run_python_file(working_directory, file_path, args=[]):
         return "Error: Execution timed out after 30 seconds."
     except Exception as e:
         return f"Error: executing Python file: {e}"
+    
+schema_run_python = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Executes a Python file within a specified working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The relative path to the Python file to execute, constrained to the working directory."
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description="A list of arguments to pass to the Python file during execution.",
+                items=types.Schema(
+                    type=types.Type.STRING,
+                    description="An individual argument to pass to the Python file."
+                )
+            )
+        }
+    )
+)
