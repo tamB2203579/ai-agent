@@ -22,7 +22,7 @@ The agent communicates with the `gemini-2.0-flash-001` model through the `google
 3. Install dependencies:
    ```bash
    pip install uv
-   uv pip install google-genai python-dotenv
+   uv add google-genai python-dotenv
    ```
 4. Create a `.env` file with your API key:
    ```
@@ -33,5 +33,6 @@ The agent communicates with the `gemini-2.0-flash-001` model through the `google
    uv run main.py "What files are in the project?"
    ```
    Use `--verbose` to see details of each function call.
+
 
 
